@@ -38,7 +38,7 @@ export function Navbar() {
 				</Button>
 				<a
 					aria-label="GitHub repository"
-					href="https://github.com/lukilabs/beautiful-mermaid"
+					href="https://github.com/bring-shrubbery/beautiful-mermaid-playground"
 					rel="noopener noreferrer"
 					target="_blank"
 				>
