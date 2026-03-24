@@ -3,6 +3,13 @@
 import { Copy01Icon, Download04Icon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "@/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
 	Tooltip,
@@ -16,6 +23,9 @@ interface MermaidPreviewProps {
 	rawAsciiOutput: string;
 	mode: "svg" | "ascii";
 	onModeChange: (mode: "svg" | "ascii") => void;
+	themeName: string;
+	themeNames: string[];
+	onThemeNameChange: (name: string) => void;
 	error: string | null;
 }
 
@@ -43,6 +53,9 @@ export function MermaidPreview({
 	rawAsciiOutput,
 	mode,
 	onModeChange,
+	themeName,
+	themeNames,
+	onThemeNameChange,
 	error,
 }: MermaidPreviewProps) {
 	function handleCopy() {
@@ -74,6 +87,22 @@ export function MermaidPreview({
 					<ToggleGroupItem value="svg">SVG</ToggleGroupItem>
 					<ToggleGroupItem value="ascii">ASCII</ToggleGroupItem>
 				</ToggleGroup>
+
+				{mode === "svg" && (
+					<Select onValueChange={onThemeNameChange} value={themeName}>
+						<SelectTrigger className="w-44">
+							<SelectValue placeholder="Theme" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="auto">Auto (system)</SelectItem>
+							{themeNames.map((name) => (
+								<SelectItem key={name} value={name}>
+									{name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
+				)}
 
 				<div className="flex-1" />
 

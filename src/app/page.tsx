@@ -1,6 +1,11 @@
 "use client";
 
-import { renderMermaidASCII, renderMermaidSVG } from "beautiful-mermaid";
+import type { ThemeName } from "beautiful-mermaid";
+import {
+	renderMermaidASCII,
+	renderMermaidSVG,
+	THEMES,
+} from "beautiful-mermaid";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MermaidEditor } from "@/components/mermaid-editor";
 import { MermaidPreview } from "@/components/mermaid-preview";
@@ -16,6 +21,7 @@ const DEFAULT_TEXT = `graph TD
 export default function HomePage() {
 	const [mermaidText, setMermaidText] = useState(DEFAULT_TEXT);
 	const [previewMode, setPreviewMode] = useState<"svg" | "ascii">("svg");
+	const [themeName, setThemeName] = useState<ThemeName | "auto">("auto");
 	const [immediateRender, setImmediateRender] = useState(false);
 
 	const debouncedText = useDebouncedValue(mermaidText, 300, immediateRender);
@@ -28,11 +34,15 @@ export default function HomePage() {
 
 	const { svgOutput, asciiOutput, rawAsciiOutput, error } = useMemo(() => {
 		try {
-			const svg = renderMermaidSVG(debouncedText, {
-				bg: "var(--background)",
-				fg: "var(--foreground)",
-				transparent: true,
-			});
+			const svgOptions =
+				themeName === "auto"
+					? {
+							bg: "var(--background)",
+							fg: "var(--foreground)",
+							transparent: true,
+						}
+					: THEMES[themeName];
+			const svg = renderMermaidSVG(debouncedText, svgOptions);
 			const ascii = renderMermaidASCII(debouncedText, { colorMode: "html" });
 			const rawAscii = renderMermaidASCII(debouncedText, { colorMode: "none" });
 			return {
@@ -49,7 +59,7 @@ export default function HomePage() {
 				error: e instanceof Error ? e.message : "Rendering failed",
 			};
 		}
-	}, [debouncedText]);
+	}, [debouncedText, themeName]);
 
 	const handlePaste = useCallback(() => {
 		setImmediateRender(true);
@@ -72,8 +82,11 @@ export default function HomePage() {
 						error={error}
 						mode={previewMode}
 						onModeChange={setPreviewMode}
+						onThemeNameChange={setThemeName}
 						rawAsciiOutput={rawAsciiOutput}
 						svgOutput={svgOutput}
+						themeName={themeName}
+						themeNames={Object.keys(THEMES)}
 					/>
 				</div>
 			</div>
