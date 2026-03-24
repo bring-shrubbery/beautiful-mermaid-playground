@@ -1,13 +1,13 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
-import { Dancing_Script, Geist, Inter } from "next/font/google";
+import { Caveat, Geist, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const dancingScript = Dancing_Script({
+const caveat = Caveat({
 	subsets: ["latin"],
 	variable: "--font-cursive",
 });
@@ -32,7 +32,7 @@ export default function RootLayout({
 				geist.variable,
 				"font-sans",
 				inter.variable,
-				dancingScript.variable,
+				caveat.variable,
 			)}
 			lang="en"
 			suppressHydrationWarning
