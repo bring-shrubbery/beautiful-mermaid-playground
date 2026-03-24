@@ -3,8 +3,29 @@
 import type { AsciiRenderOptions, RenderOptions } from "beautiful-mermaid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+
+const FONT_OPTIONS = [
+	"Inter",
+	"Arial",
+	"Helvetica",
+	"Georgia",
+	"Times New Roman",
+	"Courier New",
+	"Verdana",
+	"Trebuchet MS",
+	"Palatino",
+	"Garamond",
+	"Comic Sans MS",
+] as const;
 
 interface SvgCustomizations {
 	font?: string;
@@ -136,12 +157,23 @@ export function SvgCustomizePanel({
 			<div className="flex flex-col gap-2">
 				<div className="flex items-center justify-between gap-2">
 					<Label className="shrink-0 text-xs">Font</Label>
-					<Input
-						className="h-7 w-28 text-xs"
-						onChange={(e) => update({ font: e.target.value || undefined })}
-						placeholder="Inter"
-						value={options.font ?? ""}
-					/>
+					<Select
+						onValueChange={(v) =>
+							update({ font: v === "Inter" ? undefined : v })
+						}
+						value={options.font ?? "Inter"}
+					>
+						<SelectTrigger className="h-7 w-28 text-xs">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							{FONT_OPTIONS.map((font) => (
+								<SelectItem key={font} value={font}>
+									<span style={{ fontFamily: font }}>{font}</span>
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 				<NumberField
 					label="Padding"
