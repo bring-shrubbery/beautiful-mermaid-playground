@@ -20,7 +20,12 @@ export function Navbar() {
 
 	return (
 		<header className="flex h-14 items-center justify-between border-b px-4">
-			<span className="font-semibold">Beautiful Mermaid Playground</span>
+			<span
+				className="font-bold text-lg"
+				style={{ fontFamily: "var(--font-cursive)" }}
+			>
+				Beautiful Mermaid Playground
+			</span>
 			<div className="flex items-center gap-1">
 				<Button
 					aria-label="Toggle theme"

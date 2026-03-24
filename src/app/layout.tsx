@@ -1,12 +1,16 @@
 import "@/styles/globals.css";
 
 import type { Metadata } from "next";
-import { Geist, Inter } from "next/font/google";
+import { Dancing_Script, Geist, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const dancingScript = Dancing_Script({
+	subsets: ["latin"],
+	variable: "--font-cursive",
+});
 
 export const metadata: Metadata = {
 	title: "Beautiful Mermaid Playground",
@@ -24,7 +28,12 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html
-			className={cn(geist.variable, "font-sans", inter.variable)}
+			className={cn(
+				geist.variable,
+				"font-sans",
+				inter.variable,
+				dancingScript.variable,
+			)}
 			lang="en"
 			suppressHydrationWarning
 		>
