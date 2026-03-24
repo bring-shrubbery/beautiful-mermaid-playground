@@ -47,12 +47,18 @@ export default function HomePage() {
 		}
 	}, [immediateRender]);
 
+	const resolvedThemeName = useMemo(() => {
+		const autoTheme = resolvedTheme === "dark" ? "github-dark" : "github-light";
+		return themeName === "auto" ? autoTheme : themeName;
+	}, [themeName, resolvedTheme]);
+
+	const themeColors = useMemo(
+		() => THEMES[resolvedThemeName] ?? { bg: "#ffffff", fg: "#1f2328" },
+		[resolvedThemeName],
+	);
+
 	const { svgOutput, asciiOutput, rawAsciiOutput, error } = useMemo(() => {
 		try {
-			const autoTheme =
-				resolvedTheme === "dark" ? "github-dark" : "github-light";
-			const resolvedThemeName = themeName === "auto" ? autoTheme : themeName;
-			const themeColors = THEMES[resolvedThemeName];
 			const svgOverrides = toSvgRenderOptions(svgCustomizations);
 			const svg = renderMermaidSVG(debouncedText, {
 				...themeColors,
@@ -82,13 +88,7 @@ export default function HomePage() {
 				error: e instanceof Error ? e.message : "Rendering failed",
 			};
 		}
-	}, [
-		debouncedText,
-		themeName,
-		resolvedTheme,
-		svgCustomizations,
-		asciiCustomizations,
-	]);
+	}, [debouncedText, themeColors, svgCustomizations, asciiCustomizations]);
 
 	const handlePaste = useCallback(() => {
 		setImmediateRender(true);
@@ -118,6 +118,7 @@ export default function HomePage() {
 						rawAsciiOutput={rawAsciiOutput}
 						svgCustomizations={svgCustomizations}
 						svgOutput={svgOutput}
+						themeColors={themeColors}
 						themeName={themeName}
 						themeNames={Object.keys(THEMES)}
 					/>

@@ -1,6 +1,10 @@
 "use client";
 
-import type { AsciiRenderOptions, RenderOptions } from "beautiful-mermaid";
+import type {
+	AsciiRenderOptions,
+	DiagramColors,
+	RenderOptions,
+} from "beautiful-mermaid";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -35,6 +39,8 @@ interface SvgCustomizations {
 	componentSpacing?: number;
 	transparent?: boolean;
 	interactive?: boolean;
+	bg?: string;
+	fg?: string;
 	line?: string;
 	accent?: string;
 	muted?: string;
@@ -51,6 +57,10 @@ interface AsciiCustomizations {
 	border?: string;
 	line?: string;
 	arrow?: string;
+	accent?: string;
+	bg?: string;
+	corner?: string;
+	junction?: string;
 }
 
 export type { AsciiCustomizations, SvgCustomizations };
@@ -86,10 +96,12 @@ function NumberField({
 function ColorField({
 	label,
 	value,
+	fallback,
 	onChange,
 }: {
 	label: string;
 	value: string | undefined;
+	fallback: string;
 	onChange: (value: string | undefined) => void;
 }) {
 	return (
@@ -109,7 +121,7 @@ function ColorField({
 					className="h-7 w-8 cursor-pointer rounded border-none bg-transparent"
 					onChange={(e) => onChange(e.target.value)}
 					type="color"
-					value={value ?? "#888888"}
+					value={value ?? fallback}
 				/>
 			</div>
 		</div>
@@ -144,9 +156,11 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 export function SvgCustomizePanel({
 	options,
 	onChange,
+	themeColors,
 }: {
 	options: SvgCustomizations;
 	onChange: (options: SvgCustomizations) => void;
+	themeColors: DiagramColors;
 }) {
 	const update = (patch: Partial<SvgCustomizations>) =>
 		onChange({ ...options, ...patch });
@@ -219,29 +233,46 @@ export function SvgCustomizePanel({
 
 			<Separator />
 
-			<SectionTitle>Color overrides</SectionTitle>
+			<SectionTitle>Colors</SectionTitle>
 			<div className="flex flex-col gap-2">
 				<ColorField
+					fallback={themeColors.bg}
+					label="Background"
+					onChange={(v) => update({ bg: v })}
+					value={options.bg}
+				/>
+				<ColorField
+					fallback={themeColors.fg}
+					label="Foreground"
+					onChange={(v) => update({ fg: v })}
+					value={options.fg}
+				/>
+				<ColorField
+					fallback={themeColors.line ?? themeColors.fg}
 					label="Line"
 					onChange={(v) => update({ line: v })}
 					value={options.line}
 				/>
 				<ColorField
+					fallback={themeColors.accent ?? themeColors.fg}
 					label="Accent"
 					onChange={(v) => update({ accent: v })}
 					value={options.accent}
 				/>
 				<ColorField
+					fallback={themeColors.muted ?? themeColors.fg}
 					label="Muted"
 					onChange={(v) => update({ muted: v })}
 					value={options.muted}
 				/>
 				<ColorField
+					fallback={themeColors.surface ?? themeColors.bg}
 					label="Surface"
 					onChange={(v) => update({ surface: v })}
 					value={options.surface}
 				/>
 				<ColorField
+					fallback={themeColors.border ?? themeColors.fg}
 					label="Border"
 					onChange={(v) => update({ border: v })}
 					value={options.border}
@@ -254,9 +285,11 @@ export function SvgCustomizePanel({
 export function AsciiCustomizePanel({
 	options,
 	onChange,
+	themeColors,
 }: {
 	options: AsciiCustomizations;
 	onChange: (options: AsciiCustomizations) => void;
+	themeColors: DiagramColors;
 }) {
 	const update = (patch: Partial<AsciiCustomizations>) =>
 		onChange({ ...options, ...patch });
@@ -298,27 +331,55 @@ export function AsciiCustomizePanel({
 
 			<Separator />
 
-			<SectionTitle>Color overrides</SectionTitle>
+			<SectionTitle>Colors</SectionTitle>
 			<div className="flex flex-col gap-2">
 				<ColorField
+					fallback={themeColors.fg}
 					label="Text"
 					onChange={(v) => update({ fg: v })}
 					value={options.fg}
 				/>
 				<ColorField
+					fallback={themeColors.fg}
 					label="Border"
 					onChange={(v) => update({ border: v })}
 					value={options.border}
 				/>
 				<ColorField
+					fallback={themeColors.line ?? themeColors.fg}
 					label="Line"
 					onChange={(v) => update({ line: v })}
 					value={options.line}
 				/>
 				<ColorField
+					fallback={themeColors.accent ?? themeColors.fg}
 					label="Arrow"
 					onChange={(v) => update({ arrow: v })}
 					value={options.arrow}
+				/>
+				<ColorField
+					fallback={themeColors.accent ?? themeColors.fg}
+					label="Accent"
+					onChange={(v) => update({ accent: v })}
+					value={options.accent}
+				/>
+				<ColorField
+					fallback={themeColors.bg}
+					label="Background"
+					onChange={(v) => update({ bg: v })}
+					value={options.bg}
+				/>
+				<ColorField
+					fallback={themeColors.line ?? themeColors.fg}
+					label="Corner"
+					onChange={(v) => update({ corner: v })}
+					value={options.corner}
+				/>
+				<ColorField
+					fallback={themeColors.fg}
+					label="Junction"
+					onChange={(v) => update({ junction: v })}
+					value={options.junction}
 				/>
 			</div>
 		</div>
@@ -340,6 +401,8 @@ export function toSvgRenderOptions(
 		opts.componentSpacing = customizations.componentSpacing;
 	if (customizations.transparent) opts.transparent = customizations.transparent;
 	if (customizations.interactive) opts.interactive = customizations.interactive;
+	if (customizations.bg) opts.bg = customizations.bg;
+	if (customizations.fg) opts.fg = customizations.fg;
 	if (customizations.line) opts.line = customizations.line;
 	if (customizations.accent) opts.accent = customizations.accent;
 	if (customizations.muted) opts.muted = customizations.muted;
@@ -365,6 +428,10 @@ export function toAsciiRenderOptions(
 	if (customizations.border) theme.border = customizations.border;
 	if (customizations.line) theme.line = customizations.line;
 	if (customizations.arrow) theme.arrow = customizations.arrow;
+	if (customizations.accent) theme.accent = customizations.accent;
+	if (customizations.bg) theme.bg = customizations.bg;
+	if (customizations.corner) theme.corner = customizations.corner;
+	if (customizations.junction) theme.junction = customizations.junction;
 	if (Object.keys(theme).length > 0) opts.theme = theme;
 
 	return opts;

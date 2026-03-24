@@ -6,6 +6,7 @@ import {
 	Settings02Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import type { DiagramColors } from "beautiful-mermaid";
 import { useState } from "react";
 import type {
 	AsciiCustomizations,
@@ -39,6 +40,7 @@ interface MermaidPreviewProps {
 	themeName: string;
 	themeNames: string[];
 	onThemeNameChange: (name: string) => void;
+	themeColors: DiagramColors;
 	svgCustomizations: SvgCustomizations;
 	onSvgCustomizationsChange: (options: SvgCustomizations) => void;
 	asciiCustomizations: AsciiCustomizations;
@@ -73,6 +75,7 @@ export function MermaidPreview({
 	themeName,
 	themeNames,
 	onThemeNameChange,
+	themeColors,
 	svgCustomizations,
 	onSvgCustomizationsChange,
 	asciiCustomizations,
@@ -181,11 +184,13 @@ export function MermaidPreview({
 							<SvgCustomizePanel
 								onChange={onSvgCustomizationsChange}
 								options={svgCustomizations}
+								themeColors={themeColors}
 							/>
 						) : (
 							<AsciiCustomizePanel
 								onChange={onAsciiCustomizationsChange}
 								options={asciiCustomizations}
+								themeColors={themeColors}
 							/>
 						)}
 					</div>
