@@ -2,11 +2,11 @@ import "@/styles/globals.css";
 
 import type { Metadata } from "next";
 import { Geist, Inter } from "next/font/google";
-import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
 	title: "Beautiful Mermaid Playground",
@@ -23,12 +23,14 @@ export default function RootLayout({
 	children,
 }: Readonly<{ children: React.ReactNode }>) {
 	return (
-		<html className={cn(geist.variable, "font-sans", inter.variable)} lang="en" suppressHydrationWarning>
+		<html
+			className={cn(geist.variable, "font-sans", inter.variable)}
+			lang="en"
+			suppressHydrationWarning
+		>
 			<body>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<TooltipProvider>
-						{children}
-					</TooltipProvider>
+					<TooltipProvider>{children}</TooltipProvider>
 				</ThemeProvider>
 			</body>
 		</html>

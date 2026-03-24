@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { renderMermaidSVG, renderMermaidASCII } from "beautiful-mermaid";
-import { useDebouncedValue } from "@/hooks/use-debounce";
-import { Navbar } from "@/components/navbar";
+import { renderMermaidASCII, renderMermaidSVG } from "beautiful-mermaid";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { MermaidEditor } from "@/components/mermaid-editor";
 import { MermaidPreview } from "@/components/mermaid-preview";
+import { Navbar } from "@/components/navbar";
+import { useDebouncedValue } from "@/hooks/use-debounce";
 
 const DEFAULT_TEXT = `graph TD
     A[Start] --> B{Decision}
@@ -35,7 +35,12 @@ export default function HomePage() {
 			});
 			const ascii = renderMermaidASCII(debouncedText, { colorMode: "html" });
 			const rawAscii = renderMermaidASCII(debouncedText, { colorMode: "none" });
-			return { svgOutput: svg, asciiOutput: ascii, rawAsciiOutput: rawAscii, error: null };
+			return {
+				svgOutput: svg,
+				asciiOutput: ascii,
+				rawAsciiOutput: rawAscii,
+				error: null,
+			};
 		} catch (e) {
 			return {
 				svgOutput: "",
@@ -51,24 +56,24 @@ export default function HomePage() {
 	}, []);
 
 	return (
-		<div className="flex flex-col h-screen">
+		<div className="flex h-screen flex-col">
 			<Navbar />
-			<div className="flex flex-1 min-h-0">
+			<div className="flex min-h-0 flex-1">
 				<div className="w-1/2 border-r">
 					<MermaidEditor
-						value={mermaidText}
 						onChange={setMermaidText}
 						onPaste={handlePaste}
+						value={mermaidText}
 					/>
 				</div>
 				<div className="w-1/2">
 					<MermaidPreview
-						svgOutput={svgOutput}
 						asciiOutput={asciiOutput}
-						rawAsciiOutput={rawAsciiOutput}
+						error={error}
 						mode={previewMode}
 						onModeChange={setPreviewMode}
-						error={error}
+						rawAsciiOutput={rawAsciiOutput}
+						svgOutput={svgOutput}
 					/>
 				</div>
 			</div>

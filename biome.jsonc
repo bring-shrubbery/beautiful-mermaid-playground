@@ -24,6 +24,10 @@
 		"enabled": true,
 		"rules": {
 			"recommended": true,
+			"security": {
+				// dangerouslySetInnerHTML is used intentionally to render SVG/ASCII from beautiful-mermaid
+				"noDangerouslySetInnerHtml": "off"
+			},
 			"nursery": {
 				"useSortedClasses": {
 					"level": "warn",
