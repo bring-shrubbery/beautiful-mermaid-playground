@@ -1,7 +1,20 @@
 "use client";
 
-import { Copy01Icon, Download04Icon } from "@hugeicons/core-free-icons";
+import {
+	Copy01Icon,
+	Download04Icon,
+	Settings02Icon,
+} from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { useState } from "react";
+import type {
+	AsciiCustomizations,
+	SvgCustomizations,
+} from "@/components/customize-panel";
+import {
+	AsciiCustomizePanel,
+	SvgCustomizePanel,
+} from "@/components/customize-panel";
 import { Button } from "@/components/ui/button";
 import {
 	Select,
@@ -26,6 +39,10 @@ interface MermaidPreviewProps {
 	themeName: string;
 	themeNames: string[];
 	onThemeNameChange: (name: string) => void;
+	svgCustomizations: SvgCustomizations;
+	onSvgCustomizationsChange: (options: SvgCustomizations) => void;
+	asciiCustomizations: AsciiCustomizations;
+	onAsciiCustomizationsChange: (options: AsciiCustomizations) => void;
 	error: string | null;
 }
 
@@ -56,8 +73,14 @@ export function MermaidPreview({
 	themeName,
 	themeNames,
 	onThemeNameChange,
+	svgCustomizations,
+	onSvgCustomizationsChange,
+	asciiCustomizations,
+	onAsciiCustomizationsChange,
 	error,
 }: MermaidPreviewProps) {
+	const [customizeOpen, setCustomizeOpen] = useState(false);
+
 	function handleCopy() {
 		const text = mode === "svg" ? svgOutput : rawAsciiOutput;
 		navigator.clipboard.writeText(text);
@@ -125,16 +148,47 @@ export function MermaidPreview({
 						<TooltipContent>Download SVG</TooltipContent>
 					</Tooltip>
 				)}
+
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<Button
+							onClick={() => setCustomizeOpen(!customizeOpen)}
+							size="icon"
+							variant={customizeOpen ? "secondary" : "ghost"}
+						>
+							<HugeiconsIcon icon={Settings02Icon} size={16} />
+						</Button>
+					</TooltipTrigger>
+					<TooltipContent>Customize</TooltipContent>
+				</Tooltip>
 			</div>
 
-			{/* Content */}
-			<div className="flex-1 overflow-auto p-4">
-				{error ? (
-					<p className="text-destructive">{error}</p>
-				) : mode === "svg" ? (
-					<SvgContent html={svgOutput} />
-				) : (
-					<AsciiContent html={asciiOutput} />
+			{/* Content + optional customize panel */}
+			<div className="flex min-h-0 flex-1">
+				<div className="flex-1 overflow-auto p-4">
+					{error ? (
+						<p className="text-destructive">{error}</p>
+					) : mode === "svg" ? (
+						<SvgContent html={svgOutput} />
+					) : (
+						<AsciiContent html={asciiOutput} />
+					)}
+				</div>
+
+				{customizeOpen && (
+					<div className="w-56 shrink-0 overflow-auto border-l">
+						{mode === "svg" ? (
+							<SvgCustomizePanel
+								onChange={onSvgCustomizationsChange}
+								options={svgCustomizations}
+							/>
+						) : (
+							<AsciiCustomizePanel
+								onChange={onAsciiCustomizationsChange}
+								options={asciiCustomizations}
+							/>
+						)}
+					</div>
 				)}
 			</div>
 		</div>

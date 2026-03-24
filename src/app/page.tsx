@@ -8,6 +8,14 @@ import {
 } from "beautiful-mermaid";
 import { useTheme } from "next-themes";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import type {
+	AsciiCustomizations,
+	SvgCustomizations,
+} from "@/components/customize-panel";
+import {
+	toAsciiRenderOptions,
+	toSvgRenderOptions,
+} from "@/components/customize-panel";
 import { MermaidEditor } from "@/components/mermaid-editor";
 import { MermaidPreview } from "@/components/mermaid-preview";
 import { Navbar } from "@/components/navbar";
@@ -25,6 +33,11 @@ export default function HomePage() {
 	const { resolvedTheme } = useTheme();
 	const [themeName, setThemeName] = useState<ThemeName | "auto">("auto");
 	const [immediateRender, setImmediateRender] = useState(false);
+	const [svgCustomizations, setSvgCustomizations] = useState<SvgCustomizations>(
+		{},
+	);
+	const [asciiCustomizations, setAsciiCustomizations] =
+		useState<AsciiCustomizations>({});
 
 	const debouncedText = useDebouncedValue(mermaidText, 300, immediateRender);
 
@@ -39,10 +52,22 @@ export default function HomePage() {
 			const autoTheme =
 				resolvedTheme === "dark" ? "github-dark" : "github-light";
 			const resolvedThemeName = themeName === "auto" ? autoTheme : themeName;
-			const svgOptions = THEMES[resolvedThemeName];
-			const svg = renderMermaidSVG(debouncedText, svgOptions);
-			const ascii = renderMermaidASCII(debouncedText, { colorMode: "html" });
-			const rawAscii = renderMermaidASCII(debouncedText, { colorMode: "none" });
+			const themeColors = THEMES[resolvedThemeName];
+			const svgOverrides = toSvgRenderOptions(svgCustomizations);
+			const svg = renderMermaidSVG(debouncedText, {
+				...themeColors,
+				...svgOverrides,
+			});
+
+			const asciiOverrides = toAsciiRenderOptions(asciiCustomizations);
+			const ascii = renderMermaidASCII(debouncedText, {
+				colorMode: "html",
+				...asciiOverrides,
+			});
+			const rawAscii = renderMermaidASCII(debouncedText, {
+				colorMode: "none",
+				...asciiOverrides,
+			});
 			return {
 				svgOutput: svg,
 				asciiOutput: ascii,
@@ -57,7 +82,13 @@ export default function HomePage() {
 				error: e instanceof Error ? e.message : "Rendering failed",
 			};
 		}
-	}, [debouncedText, themeName, resolvedTheme]);
+	}, [
+		debouncedText,
+		themeName,
+		resolvedTheme,
+		svgCustomizations,
+		asciiCustomizations,
+	]);
 
 	const handlePaste = useCallback(() => {
 		setImmediateRender(true);
@@ -76,12 +107,16 @@ export default function HomePage() {
 				</div>
 				<div className="w-1/2">
 					<MermaidPreview
+						asciiCustomizations={asciiCustomizations}
 						asciiOutput={asciiOutput}
 						error={error}
 						mode={previewMode}
+						onAsciiCustomizationsChange={setAsciiCustomizations}
 						onModeChange={setPreviewMode}
+						onSvgCustomizationsChange={setSvgCustomizations}
 						onThemeNameChange={setThemeName}
 						rawAsciiOutput={rawAsciiOutput}
+						svgCustomizations={svgCustomizations}
 						svgOutput={svgOutput}
 						themeName={themeName}
 						themeNames={Object.keys(THEMES)}
